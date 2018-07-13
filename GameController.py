@@ -1,12 +1,15 @@
 from Game import Game
 
-# Simple command line controller for Game
+
+# Command line controller for Game
 class GameController:
     def __init__(self):
+        self.game = Game()
+        self.current_side = 1
         self.new_game()
-    
-    def new_game(self, dimensions=(19,19)):
-        self.game = Game(dimensions=dimensions)
+
+    def new_game(self, size):
+        self.game = Game(size=size)
         self.current_side = 1
         self.start_game()
         
@@ -30,4 +33,4 @@ class GameController:
     def get_input(self):
         print('Enter point (x and y separated by space)')
         user_input = input().split(' ')
-        return (int(user_input[0]), int(user_input[1]))
+        return int(user_input[0]), int(user_input[1])

@@ -19,16 +19,16 @@ import GameIO
 # # ...
 
 # # Loading a Game instance from saved game_str
-# game_str = '0 19 19 4 140 160 180 200' # this should be loaded from a saved file
+# game_str = '0 19 4 140 160 180 200' # this should be loaded from a saved file
 # game = Game.load_from_str(game_str)
 # game.print_board()
 # ...
 
 # Loading and saving games into a txt file using GameIO
 # games = [
-#     '0 19 19 4 140 160 180 200',
-#     '0 19 19 5 140 160 180 200 300',
-#     '0 15 15 4 120 160 180 190'
+#     '0 19 4 140 160 180 200',
+#     '0 19 5 140 160 180 200 300',
+#     '0 15 4 120 160 180 190'
 # ]
 # for game_str in games:
 #     GameIO.save_game(game_str)

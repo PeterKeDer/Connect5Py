@@ -1,17 +1,15 @@
 
 class Game:
-    def __init__(self, board=None, dimensions=(19,19), side=1, moves=None):
+    def __init__(self, board=None, size=19, side=1, moves=None):
         self.side = side
         if board:
             # initializing with board is not recommended unless if moves is also provided
-            self.width = len(board[0])
-            self.height = len(board)
+            self.size = len(board)
             self.board = board
             self.moves = moves if moves else []
         else:
-            self.width = dimensions[0]
-            self.height = dimensions[1]
-            self.init_board(dimensions)
+            self.size = size
+            self.init_board(size)
             if moves:
                 self.moves = moves
                 current_side = 1
@@ -22,108 +20,123 @@ class Game:
             else:
                 self.moves = []
 
-    # Initializes a board (2d list)
-    # with dimensions (width, height)
-    def init_board(self, dimensions):
+    def init_board(self, size):
+        """Initializes a board (2d list) with dimensions (width, height)"""
         self.board = []
-        for _ in range(dimensions[1]):
-            self.board.append([0] * dimensions[0])
-    
-    # Prints a formatted board
+        for _ in range(size):
+            self.board.append([0] * size)
+
     def print_board(self):
+        """Prints out a formatted board"""
         for row in self.board:
             print(' '.join(str(i) for i in row))
-    
-    # point: (x, y)
+
     def get_point(self, point):
         if self.point_is_valid(point):
             x, y = point
             return self.board[y][x]
         return -1
 
-    # Set the point (x, y) to value
     def set_point(self, point, value):
+        """Set the point (x, y) to value"""
         if self.point_is_valid(point):
             x, y = point
             self.board[y][x] = value
             return True
         return False
-    
-    # Places a piece at certain point, only if that point is empty
-    # Also adds point num to moves
+
     def place(self, point, side):
-        if self.get_point(point) == 0 and (side in [1,2]):
+        """Places a piece at certain point, only if that point is empty"""
+        if self.get_point(point) == 0 and (side in [1, 2]):
             if self.set_point(point, side):
                 self.moves.append(self.point_num(point))
                 return True
         return False
-    
-    # Returns whether the given point is within the board
-    def point_is_valid(self, point):
-        x, y = point
-        return 0 <= y and y < self.height and 0 <= x and x < self.width
 
-    # Checks whether the given side has won
-    # TODO: Modify to return win coordinates
+    def point_is_valid(self, point):
+        """Returns whether the given point is within the board"""
+        x, y = point
+        return 0 <= y < self.size and 0 <= x < self.size
+
+    def check_game_status(self):
+        """Checks the status of the game. -1: board filled. 0: nothing. 1/2: won"""
+        # Check win
+        if self.check_win(1):
+            return 1
+        if self.check_win(2):
+            return 2
+        # Check if board is full
+        is_full = True
+        for y in range(self.size):
+            for x in range(self.size):
+                if self.get_point((x, y)) == 0:
+                    is_full = False
+                    break
+        if is_full:
+            return -1
+        return 0
+
     def check_win(self, side=1):
+        """Checks whether the given side has won"""
         # Utility function used to check win
         # Iterates through points and checks if five in a row have value side
         # calc_point: lambda x,y,i: gets the point to check for given i
         def iter_points(x, y, calc_point):
-            i = 0 # offset of point
+            i = 0  # offset of point
             while self.get_point(calc_point(x, y, i)) == side:
                 i += 1
                 if i == 5:
                     return True
-        
-        for y in range(self.height):
-            for x in range(self.width):
+
+        for y in range(self.size):
+            for x in range(self.size):
                 # Horizontal
-                if x+5 <= self.width:
-                    if iter_points(x, y, lambda x, y, i: (x+i, y)):
+                if x + 5 <= self.size:
+                    if iter_points(x, y, lambda x, y, i: (x + i, y)):
                         return True
                 # Vertical
-                if y+5 <= self.height:
-                    if iter_points(x, y, lambda x, y, i: (x, y+i)):
+                if y + 5 <= self.size:
+                    if iter_points(x, y, lambda x, y, i: (x, y + i)):
                         return True
                 # Diagonal
-                if x+5 <=self.width and y+5 <= self.height:
+                if x + 5 <= self.size and y + 5 <= self.size:
                     # top-left to bottom-right
-                    if iter_points(x, y, lambda x, y, i: (x+i, y+i)):
+                    if iter_points(x, y, lambda x, y, i: (x + i, y + i)):
                         return True
                     # bottom-left to top-right
-                    if iter_points(x, y, lambda x, y, i: (x+i, y+4-i)):
+                    if iter_points(x, y, lambda x, y, i: (x + i, y + 4 - i)):
                         return True
         return False
 
     def point_num(self, point):
         x, y = point
-        return y * self.width + x
+        return y * self.size + x
 
     def point_from_num(self, point_num):
-        x = point_num % self.width
-        y = int(point_num / self.width)
-        return (x, y)
+        x = point_num % self.size
+        y = int(point_num / self.size)
+        return x, y
 
-    # Outputs the current game state as a string to be saved
-    # Format: win(0/1/2) width height len(moves) point1_num point2_num ...
     def game_str(self):
+        """
+        Outputs the current game state as a string to be saved
+        Format: win(0/1/2) size len(moves) point1_num point2_num ...
+        """
         win_str = '0'
         if self.check_win(1):
             win_str = '1'
         elif self.check_win(2):
             win_str = '2'
         moves_str = ' '.join(str(move) for move in self.moves)
-        return ' '.join([win_str, str(self.width), str(self.height), str(len(self.moves)), moves_str])
-    
-    # Load from saved game_str using above method
+        return ' '.join([win_str, str(self.size), str(len(self.moves)), moves_str])
+
     @staticmethod
     def load_from_str(game_str):
+        """Load from saved game_str"""
         data = game_str.split(' ')
         if len(data) < 4:
             return None
-        width = int(data[1])
-        height = int(data[2])
-        moves = [int(move_str) for move_str in data[4:]]
+        size = int(data[1])
+        moves = [int(move_str) for move_str in data[3:]]
         side = 1 if len(moves) % 2 == 0 else 2
-        return Game(dimensions=(width, height), side=side, moves=moves)
+        return Game(size=size, side=side, moves=moves)
