@@ -16,8 +16,14 @@ piece2_color = 'white'
 
 
 class GameWindow(Frame):
-    def __init__(self, master=None, bot_init=None):
-        """bot_init: lambda game, side: SomeBot()"""
+    def __init__(self, master=None, play_bot=False, bot_init=None):
+        """
+        bot_init: lambda game, side: SomeBot()
+        Bot requirements:
+            .get_next_move() -> (x, y)  # computes next move
+            .new_move(point, side)  # indicates a piece was placed
+            .side: int  # 1 or 2
+        """
 
         Frame.__init__(self, master)
 
@@ -48,7 +54,7 @@ class GameWindow(Frame):
         self.game = Game()
 
         # Init bot
-        if bot_init:
+        if bot_init and play_bot:
             self.play_bot = True
             self.bot_init = bot_init
             self.bot = bot_init(self.game, 2)
@@ -171,7 +177,7 @@ def main():
     geometry = str(canvas_size) + 'x' + str(canvas_size + panel_height)
     root.geometry(geometry)
 
-    app = GameWindow(root, bot_init=GameBot)
+    app = GameWindow(root, play_bot=True, bot_init=GameBot)
 
     root.mainloop()
 
