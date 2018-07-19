@@ -116,6 +116,10 @@ class Game:
         y = int(point_num / self.size)
         return x, y
 
+    def get_current_side(self):
+        """Returns the current side (1 or 2)"""
+        return 1 if len(self.moves) % 2 == 0 else 2
+
     def game_str(self):
         """
         Outputs the current game state as a string to be saved

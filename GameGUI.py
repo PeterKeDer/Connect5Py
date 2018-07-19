@@ -1,5 +1,7 @@
 from tkinter import *
+
 from Game import Game
+from GameBot import GameBot
 
 # Graphic Constants
 canvas_size = 600
@@ -14,7 +16,9 @@ piece2_color = 'white'
 
 
 class GameWindow(Frame):
-    def __init__(self, master=None):
+    def __init__(self, master=None, bot_init=None):
+        """bot_init: lambda game, side: SomeBot()"""
+
         Frame.__init__(self, master)
 
         # Configure master widget
@@ -42,6 +46,16 @@ class GameWindow(Frame):
         self.current_side = 1
         self.game_status = 0
         self.game = Game()
+
+        # Init bot
+        if bot_init:
+            self.play_bot = True
+            self.bot_init = bot_init
+            self.bot = bot_init(self.game, 2)
+        else:
+            self.play_bot = False
+
+        # Start new game
         self.new_game()
 
         # Finish init
@@ -53,6 +67,8 @@ class GameWindow(Frame):
             self.game = game
         else:
             self.game = Game()
+            if self.play_bot:
+                self.bot = self.bot_init(self.game, 2)
 
         # Updates game logic
         self.current_side = 1 if len(self.game.moves) % 2 == 0 else 2
@@ -98,14 +114,27 @@ class GameWindow(Frame):
         """Places a piece on the board and also the game. Returns False if unable to place at point"""
         if self.game.place(point, self.current_side):
             self.draw_piece(point, self.current_side)  # draws piece on canvas
+
+            # Update bot conditions if necessary
+            if self.play_bot:
+                self.bot.new_move(point, self.current_side)
+
             # Check whether game is finished
             self.game_status = self.game.check_game_status()
             if self.game_status == 0:
                 # Continues game
                 self.current_side = 1 if self.current_side == 2 else 2  # toggles side
                 self.update_panel()
+
+                # Get bot move and update if necessary
+                if self.play_bot and self.current_side == self.bot.side:
+                    next_point = self.bot.get_next_move()
+                    self.place_piece(next_point)
+
             else:
                 self.finished()
+
+            return True
         else:
             return False
 
@@ -142,7 +171,7 @@ def main():
     geometry = str(canvas_size) + 'x' + str(canvas_size + panel_height)
     root.geometry(geometry)
 
-    app = GameWindow(root)
+    app = GameWindow(root, bot_init=GameBot)
 
     root.mainloop()
 
