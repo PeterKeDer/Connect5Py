@@ -1,7 +1,6 @@
 
 class Game:
-    def __init__(self, board=None, size=19, side=1, moves=None):
-        self.side = side
+    def __init__(self, board=None, size=19, moves=None):
         if board:
             # initializing with board is not recommended unless if moves is also provided
             self.size = len(board)

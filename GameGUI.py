@@ -92,7 +92,7 @@ class GameWindow(Frame):
 
         o = (piece_size / 2) * self.line_space  # offset from center of circle to edge
         color = piece1_color if side == 1 else piece2_color
-        self.canvas.create_oval(x - o, y - o, x + o, y + o, fill=color, outline='')
+        self.canvas.create_oval(x - o, y - o, x + o, y + o, fill=color, outline=color)
 
     def place_piece(self, point):
         """Places a piece on the board and also the game. Returns False if unable to place at point"""
