@@ -16,7 +16,7 @@ piece2_color = 'white'
 
 
 class GameWindow(Frame):
-    def __init__(self, master=None, play_bot=False, bot_init=None):
+    def __init__(self, master=None, play_bot=False, bot_init=None, bot_side=2):
         """
         bot_init: lambda game, side: SomeBot()
         Bot requirements:
@@ -57,7 +57,8 @@ class GameWindow(Frame):
         if bot_init and play_bot:
             self.play_bot = True
             self.bot_init = bot_init
-            self.bot = bot_init(self.game, 2)
+            self.bot_side = bot_side
+            self.bot = bot_init(self.game, self.bot_side)
         else:
             self.play_bot = False
 
@@ -73,8 +74,9 @@ class GameWindow(Frame):
             self.game = game
         else:
             self.game = Game()
-            if self.play_bot:
-                self.bot = self.bot_init(self.game, 2)
+
+        if self.play_bot:
+            self.bot = self.bot_init(self.game, self.bot_side)
 
         # Updates game logic
         self.current_side = 1 if len(self.game.moves) % 2 == 0 else 2
@@ -89,6 +91,8 @@ class GameWindow(Frame):
         self.draw_lines()
         self.draw_pieces()
         self.update_panel()
+
+        self.bot_move()
 
     def draw_lines(self):
         """Draw board lines"""
@@ -132,10 +136,7 @@ class GameWindow(Frame):
                 self.current_side = 1 if self.current_side == 2 else 2  # toggles side
                 self.update_panel()
 
-                # Get bot move and update if necessary
-                if self.play_bot and self.current_side == self.bot.side:
-                    next_point = self.bot.get_next_move()
-                    self.place_piece(next_point)
+                self.bot_move()
 
             else:
                 self.finished()
@@ -143,6 +144,12 @@ class GameWindow(Frame):
             return True
         else:
             return False
+
+    def bot_move(self):
+        """Bot makes the move, if necessary"""
+        if self.play_bot and self.current_side == self.bot.side:
+            next_point = self.bot.get_next_move()
+            self.place_piece(next_point)
 
     def click_handler(self, event):
         """Handles click event on canvas"""
@@ -177,7 +184,10 @@ def main():
     geometry = str(canvas_size) + 'x' + str(canvas_size + panel_height)
     root.geometry(geometry)
 
-    app = GameWindow(root, play_bot=True, bot_init=GameBot)
+    app = GameWindow(root,
+                     play_bot=True,
+                     bot_init=lambda game, side: GameBot(game, side),
+                     bot_side=2)
 
     root.mainloop()
 
