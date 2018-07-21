@@ -91,19 +91,19 @@ class Game:
             for x in range(self.size):
                 # Horizontal
                 if x + 5 <= self.size:
-                    if iter_points(x, y, lambda x, y, i: (x + i, y)):
+                    if iter_points(x, y, lambda x1, y1, i: (x1 + i, y1)):
                         return True
                 # Vertical
                 if y + 5 <= self.size:
-                    if iter_points(x, y, lambda x, y, i: (x, y + i)):
+                    if iter_points(x, y, lambda x1, y1, i: (x1, y1 + i)):
                         return True
                 # Diagonal
                 if x + 5 <= self.size and y + 5 <= self.size:
                     # top-left to bottom-right
-                    if iter_points(x, y, lambda x, y, i: (x + i, y + i)):
+                    if iter_points(x, y, lambda x1, y1, i: (x1 + i, y1 + i)):
                         return True
                     # bottom-left to top-right
-                    if iter_points(x, y, lambda x, y, i: (x + i, y + 4 - i)):
+                    if iter_points(x, y, lambda x1, y1, i: (x1 + i, y1 + 4 - i)):
                         return True
         return False
 
@@ -141,5 +141,4 @@ class Game:
             return None
         size = int(data[1])
         moves = [int(move_str) for move_str in data[3:]]
-        side = 1 if len(moves) % 2 == 0 else 2
-        return Game(size=size, side=side, moves=moves)
+        return Game(size=size, moves=moves)
