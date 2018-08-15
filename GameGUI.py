@@ -16,6 +16,8 @@ piece2_color = 'white'
 
 
 class GameWindow(Frame):
+    """Minimal GUI used for training"""
+
     def __init__(self, master=None, play_bot=False, bot_init=None, bot_side=2):
         """
         bot_init: lambda game, side: SomeBot()

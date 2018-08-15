@@ -30,7 +30,7 @@ class GameBot:
                 self.win_conditions[x][y][0] = -1
                 self.win_conditions[x][y][1] = -1
                 self.lose_conditions[x][y][0] = -1
-                self.lose_conditions[x][y][0] = -1
+                self.lose_conditions[x][y][1] = -1
 
         for y in range(self.game.size - 4, self.game.size):
             for x in range(self.game.size):
