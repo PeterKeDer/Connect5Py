@@ -1,4 +1,5 @@
 import random
+import math
 import numpy as np
 
 from Game import Game
@@ -130,11 +131,12 @@ class GameBot:
 
     def get_score(self, point):
         """Returns score of given point (x, y). Higher the better"""
-        scores = [0, 10, 50, 200, 1000, 10000]
+        win_scores = [0, 10, 50, 200, 1000, math.inf]
+        lose_scores = [0, 10, 50, 200, 1000, 10000]
         score = 0
         for x, y, n in self.get_affected_conditions(point):
-            score += scores[self.win_conditions[x][y][n] + 1]
-            score += scores[self.lose_conditions[x][y][n] + 1]
+            score += win_scores[self.win_conditions[x][y][n] + 1]
+            score += lose_scores[self.lose_conditions[x][y][n] + 1]
         return score
 
 
